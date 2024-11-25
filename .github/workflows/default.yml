@@ -18,7 +18,7 @@ jobs:
       run: |
         mkdir -p dist
 
-        for arch in x86_64 aarch64; do
+        for arch in x86_64 aarch64 armhf; do
           docker build --platform "${arch}" -t alpine:bwrap .
           docker run --rm --platform "${arch}" -v $(pwd):/workdir alpine:bwrap cp /bubblewrap/build/bwrap "/workdir/dist/bwrap-${arch}"
         done
