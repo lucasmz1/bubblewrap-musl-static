@@ -1,7 +1,10 @@
 # This is a basic workflow to help you get started with Actions
 
-name: default
-on: [push, pull_request]
+name: bwrap_many_archs_static
+on:
+  schedule:
+    - cron: "0 6 * * 0"
+  workflow_dispatch:
 
 jobs:
   build:
