@@ -19,6 +19,7 @@ jobs:
 
     - name: Compile and extract artifacts from docker container
       run: |
+        echo 'build again'
         mkdir -p dist
 
         for arch in x86_64 aarch64 armhf i386; do
