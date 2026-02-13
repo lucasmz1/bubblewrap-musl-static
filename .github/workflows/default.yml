@@ -29,6 +29,7 @@ jobs:
 
     - name: Set permissions for dist directory
       run: |
+        echo $PATH
         sudo chown -R "$(id -u)":"$(id -g)" dist/
         sudo chmod -R 766 dist/
 
