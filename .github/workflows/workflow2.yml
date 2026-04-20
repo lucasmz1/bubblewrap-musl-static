@@ -21,22 +21,26 @@ jobs:
             # Lista de arquiteturas que você utilizou anteriormente
             for arch in x86_64 aarch64 armhf i386; do
             echo "Compilando para ${arch}..."
-            
             # Usamos uma imagem Alpine específica da arquitetura para garantir o musl
             # O mapeamento de nomes de arch do Docker pode variar, 
             # mas 'alpine' com --platform geralmente funciona bem.
             docker run --rm --platform "${arch}" -v $(pwd):/workdir alpine:latest /bin/sh -c "
-            # Instala dependências básicas de compilação + libselinux + libcap + xsltproc
-            apk add --no-cache build-base meson ninja python3 git libcap-dev libselinux-dev libxslt-dev bash-completion
+            # Adicione o pacote estático específico da libcap
+            apk add --no-cache build-base meson ninja python3 git libcap-static libcap-dev libc-static
             cd /workdir
             rm -rf build
-            # Configura desabilitando o que não é essencial para o seu build estático,
-            # caso queira evitar erros com dependências de testes/documentação
-            export CC='gcc'
-            export CFLAGS='-static -static-libgcc'
-            export LDFLAGS='-static -static-libgcc'
-            meson setup build --buildtype=release --default-library=static -Dselinux=disabled -Dman=disabled -Dbash_completion=disabled
+            # Forçamos o uso de bibliotecas estáticas via variáveis de ambiente
+            # O segredo aqui é usar -Wl,-Bstatic antes das libs
+            export LDFLAGS='-static -static-libgcc -Wl,-Bstatic -lcap -Wl,-Bdynamic'  
+            meson setup build --buildtype=release \
+            --default-library=static \
+            -Dselinux=disabled \
+            -Dman=disabled \
+            -Dbash_completion=disabled \
+            --prefer-static
             ninja -C build
+            # Confirmação final
+            ls -lh build/bwrap
             cp build/bwrap /workdir/dist/bwrap-${arch}-static"
             done
       - name: Set permissions for dist directory
