@@ -33,6 +33,7 @@ jobs:
             # Configura desabilitando o que não é essencial para o seu build estático,
             # caso queira evitar erros com dependências de testes/documentação
             meson setup build --buildtype=release --default-library=static -Dselinux=disabled -Dman=disabled -Dbash_completion=disabled
+            export LDFLAGS='-static'
             ninja -C build
             cp build/bwrap /workdir/dist/bwrap-${arch}-static"
             done
