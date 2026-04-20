@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: containers/bubblewrap
-          ref: main
+          ref: 0.11.1
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -36,12 +36,44 @@ jobs:
             ninja -C build
             cp build/bwrap /workdir/dist/bwrap-${arch}-static"
             done
+    - name: Set permissions for dist directory
+      run: |
+        echo $PATH
+        sudo chown -R "$(id -u)":"$(id -g)" dist/
+        sudo chmod -R 766 dist/
 
-      - name: Set permissions
-        run: sudo chown -R $USER:$USER dist/
+    - name: Upload artifacts to release
+      uses: actions/upload-artifact@v4
+      with:
+        name: bwrap
+        path: 'dist'
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: bwrap-static-builds
-          path: dist/
+    - name: Compute Short SHA
+      id: ssha
+      run: |
+        echo "ssha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    outputs:
+      ssha: ${{ steps.ssha.outputs.ssha }}
+
+
+  release:
+      permissions: write-all
+      needs: [build]
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/download-artifact@v4
+          with:
+            name: bwrap
+
+        - name: release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+            title: Continuous ${{ needs.build.outputs.ssha }}
+            automatic_release_tag: ${{ needs.build.outputs.ssha }}
+            prerelease: false
+            draft: false
+            files: |
+              *bwrap*
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
