@@ -32,7 +32,9 @@ jobs:
             rm -rf build
             # Configura desabilitando o que não é essencial para o seu build estático,
             # caso queira evitar erros com dependências de testes/documentação
-            export LDFLAGS='-static -static-libgcc -Wl,-Bstatic -lcap -Wl,-Bdynamic'
+            export CC='gcc'
+            export CFLAGS='-static -static-libgcc'
+            export LDFLAGS='-static -static-libgcc
             meson setup build --buildtype=release --default-library=static -Dselinux=disabled -Dman=disabled -Dbash_completion=disabled
             ninja -C build
             cp build/bwrap /workdir/dist/bwrap-${arch}-static"
