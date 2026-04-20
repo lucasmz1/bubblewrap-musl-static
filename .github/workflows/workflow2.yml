@@ -17,26 +17,25 @@ jobs:
 
       - name: Compile for all architectures
         run: |
-          mkdir -p dist
-          # Lista de arquiteturas que você utilizou anteriormente
-          for arch in x86_64 aarch64 armhf i386; do
+            mkdir -p dist
+            # Lista de arquiteturas que você utilizou anteriormente
+            for arch in x86_64 aarch64 armhf i386; do
             echo "Compilando para ${arch}..."
             
             # Usamos uma imagem Alpine específica da arquitetura para garantir o musl
             # O mapeamento de nomes de arch do Docker pode variar, 
             # mas 'alpine' com --platform geralmente funciona bem.
             docker run --rm --platform "${arch}" -v $(pwd):/workdir alpine:latest /bin/sh -c "
-              apk add --no-cache build-base meson ninja python3 git libcap-dev
-              cd /workdir
-              # Limpa builds anteriores se houver
-              rm -rf build
-              # Configura para build estático
-              meson setup build --buildtype=release --default-library=static
-              ninja -C build
-              # Copia o binário com o sufixo da arquitetura
-              cp build/bwrap /workdir/dist/bwrap-${arch}-static
-            "
-          done
+            # Instala dependências básicas de compilação + libselinux + libcap + xsltproc
+            apk add --no-cache build-base meson ninja python3 git libcap-dev libselinux-dev libxslt-dev bash-completion
+            cd /workdir
+            rm -rf build
+            # Configura desabilitando o que não é essencial para o seu build estático,
+            # caso queira evitar erros com dependências de testes/documentação
+            meson setup build --buildtype=release --default-library=static -Dselinux=disabled -Dman=disabled -Dbash_completion=disabled
+            ninja -C build
+            cp build/bwrap /workdir/dist/bwrap-${arch}-static"
+            done
 
       - name: Set permissions
         run: sudo chown -R $USER:$USER dist/
