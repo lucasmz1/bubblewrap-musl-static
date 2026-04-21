@@ -12,7 +12,6 @@ RUN apk update && apk add --no-cache \
     linux-headers bash meson cmake pkgconfig \
     libcap-static libcap-dev \
     libselinux-static libselinux-dev \
-    libsepol-static \
     libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
@@ -25,13 +24,14 @@ WORKDIR /bubblewrap/build
 
 # Mantivemos seu comando de linkagem manual. 
 # Nota: certifique-se de que as dependências estáticas do selinux existam no edge.
-RUN RUN cc -o bwrap \
+# O pkg-config --static --libs libselinux libcap dirá ao compilador 
+# exatamente quais arquivos .a e flags são necessários.
+RUN cc -o bwrap \
     bwrap.p/bubblewrap.c.o \
     bwrap.p/bind-mount.c.o \
     bwrap.p/network.c.o \
     bwrap.p/utils.c.o \
-    -static \
-    $(pkg-config --static --libs libselinux libcap)
+    -static $(pkg-config --static --libs libselinux libcap)
 
 # Strip
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
@@ -45,7 +45,6 @@ RUN apk update && apk add --no-cache \
     linux-headers bash meson cmake pkgconfig \
     libcap-static libcap-dev \
     libselinux-static libselinux-dev \
-    libsepol-static \
     libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
@@ -58,7 +57,14 @@ RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network
 
 WORKDIR build
 
-RUN cc -o bwrap bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o -static -L/usr/lib -lcap -lselinux
+# O pkg-config --static --libs libselinux libcap dirá ao compilador 
+# exatamente quais arquivos .a e flags são necessários.
+RUN cc -o bwrap \
+    bwrap.p/bubblewrap.c.o \
+    bwrap.p/bind-mount.c.o \
+    bwrap.p/network.c.o \
+    bwrap.p/utils.c.o \
+    -static $(pkg-config --static --libs libselinux libcap)
 
 # Strip
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
