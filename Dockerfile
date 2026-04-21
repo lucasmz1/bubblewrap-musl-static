@@ -6,6 +6,8 @@ FROM alpine:edge
 RUN apk update && apk add --no-cache \
     git gcc make musl-dev autoconf automake libtool ninja \
     linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
+    libselinux-static \
+    libsepol-static \
     libselinux-dev libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
@@ -26,10 +28,6 @@ RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 
 # Compressão (opcional)
 # RUN upx --ultra-brute --no-lzma bwrapFROM alpine:latest
-
-# Update repositories
-RUN echo https://dl-cdn.alpinelinux.org/alpine/v3.20/main/ > /etc/apk/repositories
-RUN echo https://dl-cdn.alpinelinux.org/alpine/v3.20/community/ >> /etc/apk/repositories
 
 RUN apk update
 RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
