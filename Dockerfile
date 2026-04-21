@@ -5,10 +5,11 @@ FROM alpine:edge
 # O Alpine Edge já utiliza os repositórios 'edge' por padrão.
 RUN apk update && apk add --no-cache \
     git gcc make musl-dev autoconf automake libtool ninja \
-    linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
-    libselinux-static \
+    linux-headers bash meson cmake pkgconfig \
+    libcap-static libcap-dev \
+    libselinux-static libselinux-dev \
     libsepol-static \
-    libselinux-dev libxslt upx
+    libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
 WORKDIR /bubblewrap
@@ -35,9 +36,13 @@ RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 # RUN upx --ultra-brute --no-lzma bwrapFROM alpine:latest
 
 RUN apk update
-RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
-  linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
-  libselinux-dev libxslt upx
+RUN apk update && apk add --no-cache \
+    git gcc make musl-dev autoconf automake libtool ninja \
+    linux-headers bash meson cmake pkgconfig \
+    libcap-static libcap-dev \
+    libselinux-static libselinux-dev \
+    libsepol-static \
+    libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
 
