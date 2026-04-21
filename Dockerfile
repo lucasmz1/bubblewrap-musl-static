@@ -1,6 +1,10 @@
 # Usa a versão mais recente do branch de desenvolvimento
 FROM alpine:edge
 
+RUN echo https://dl-cdn.alpinelinux.org/alpine/edge/main/ > /etc/apk/repositories
+RUN echo https://dl-cdn.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
+
 # Removemos as linhas que forçavam a v3.20. 
 # O Alpine Edge já utiliza os repositórios 'edge' por padrão.
 RUN apk update && apk add --no-cache \
