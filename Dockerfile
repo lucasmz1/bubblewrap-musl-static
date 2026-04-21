@@ -12,6 +12,7 @@ RUN apk update && apk add --no-cache \
     linux-headers bash meson cmake pkgconfig \
     libcap-static libcap-dev \
     libselinux-static libselinux-dev \
+    pcre2-static pcre2-dev \
     libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
@@ -45,6 +46,7 @@ RUN apk update && apk add --no-cache \
     linux-headers bash meson cmake pkgconfig \
     libcap-static libcap-dev \
     libselinux-static libselinux-dev \
+    pcre2-static pcre2-dev \
     libxslt upx
 
 RUN git clone https://github.com/ruanformigoni/bubblewrap
