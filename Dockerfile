@@ -20,8 +20,13 @@ WORKDIR /bubblewrap/build
 
 # Mantivemos seu comando de linkagem manual. 
 # Nota: certifique-se de que as dependências estáticas do selinux existam no edge.
-RUN cc -o bwrap bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o \
-    -static -L/usr/lib -lcap -lselinux
+RUN RUN cc -o bwrap \
+    bwrap.p/bubblewrap.c.o \
+    bwrap.p/bind-mount.c.o \
+    bwrap.p/network.c.o \
+    bwrap.p/utils.c.o \
+    -static \
+    $(pkg-config --static --libs libselinux libcap)
 
 # Strip
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
