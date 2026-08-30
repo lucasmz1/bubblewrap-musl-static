@@ -13,7 +13,7 @@ RUN apk update && apk add --no-cache \
     libcap-static libcap-dev \
     libselinux-static libselinux-dev \
     pcre2-static pcre2-dev \
-    libxslt upx bash-completation
+    libxslt upx bash bash-completion
 
 RUN git clone https://github.com/containers/bubblewrap
 WORKDIR /bubblewrap
