@@ -23,7 +23,7 @@ RUN apk update && apk add --no-cache \
     pcre2-dev
 
 # Baixa e extrai o código fonte da tag v0.12.0 de forma limpa
-RUN wget -q https://github.com && \
+RUN wget -q https://github.com/containers/bubblewrap/archive/refs/tags/v0.12.0.zip && \
     mkdir /bubblewrap2 && \
     unzip v0.12.0.zip -d /bubblewrap2 && \
     rm v0.12.0.zip
