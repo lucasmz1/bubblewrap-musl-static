@@ -8,6 +8,67 @@ RUN echo "https://alpinelinux.org" > /etc/apk/repositories && \
     echo "https://alpinelinux.org" >> /etc/apk/repositories && \
     echo "http://alpinelinux.org" >> /etc/apk/repositories
 
+# Instala apenas as dependências necessárias para a compilação estática
+RUN apk update && apk add --no-cache \
+    git \
+    gcc \
+    make \
+    musl-dev \
+    ninja \
+    linux-headers \
+    bash \
+    meson \
+    pkgconfig \
+    libcap-static \
+    libcap-dev \
+    libselinux-static \
+    libselinux-dev \
+    pcre2-static \
+    pcre2-dev \
+    build-base
+
+# Clona o código-fonte do Bubblewrap
+RUN git clone https://github.com /bubblewrap
+WORKDIR /bubblewrap
+
+# Correção essencial de compatibilidade com a biblioteca musl libc do Alpine
+RUN sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h
+
+# Configura o Meson informando que queremos uma compilação preferencialmente estática
+# Passamos as flags de linkagem estática diretamente no ambiente
+RUN LDFLAGS="-static" meson setup build \
+    --buildtype=release \
+    -Ddefault_library=static
+
+# Deixamos o próprio sistema de compilação construir o binário bwrap completo com tudo o que precisa
+RUN meson compile -C build
+
+WORKDIR /bubblewrap/build
+
+# Remove tabelas de símbolos e informações de debug para reduzir o tamanho
+RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
+
+
+# ==========================================
+# ETAPA 2: Imagem Final Otimizada
+# ==========================================
+FROM alpine:edge
+
+# Copia apenas o binário final estático gerado na etapa anterior
+COPY --from=builder /bubblewrap/build/bwrap /usr/local/bin/bwrap
+
+# Define o ponto de entrada padrão do container
+ENTRYPOINT ["/usr/local/bin/bwrap"]
+# ==========================================
+# ETAPA 1: Compilação (Ambiente de Build)
+# ==========================================
+FROM alpine:edge AS builder
+
+# Configura os repositórios estáveis e de testes do Alpine Edge
+RUN echo "https://alpinelinux.org" > /etc/apk/repositories && \
+    echo "https://alpinelinux.org" >> /etc/apk/repositories && \
+    echo "http://alpinelinux.org" >> /etc/apk/repositories
+
 # Instala apenas as dependências necessárias para a compilação
 RUN apk update && apk add --no-cache \
     git \
