@@ -15,7 +15,7 @@ RUN apk update && apk add --no-cache \
     pcre2-static pcre2-dev \
     libxslt upx bash bash-completion \
     build-base
-
+RUN source /etc/profile
 RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap
 WORKDIR /bubblewrap
 
@@ -41,17 +41,17 @@ RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 # Compressão (opcional)
 # RUN upx --ultra-brute --no-lzma bwrapFROM alpine:latest
 
-RUN apk update
 RUN apk update && apk add --no-cache \
     git gcc make musl-dev autoconf automake libtool ninja \
     linux-headers bash meson cmake pkgconfig \
     libcap-static libcap-dev \
     libselinux-static libselinux-dev \
     pcre2-static pcre2-dev \
-    libxslt upx
-
+    libxslt upx bash bash-completion \
+    build-base
+RUN source /etc/profile
 RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap
-WORKDIR bubblewrap
+WORKDIR /bubblewrap
 
 RUN meson build
 
