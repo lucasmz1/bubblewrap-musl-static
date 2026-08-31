@@ -31,7 +31,7 @@ RUN wget -q https://github.com/containers/bubblewrap/archive/refs/tags/v0.12.0.z
 WORKDIR /bubblewrap2/bubblewrap-0.12.0
 
 # Injeta os arquivos de cabeçalho necessários para a musl libc do Alpine v3.24
-RUN sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h
+RUN cd /bubblewrap2/bubblewrap-0.12.0 && sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h && cd /
 
 # CORREÇÃO DEFINITIVA: Desativamos a detecção automática do SELinux pelo Meson 
 # e injetamos os parâmetros estáticos e bibliotecas (.a) manualmente para evitar o link dinâmico (.so).
