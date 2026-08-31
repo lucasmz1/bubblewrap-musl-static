@@ -28,6 +28,8 @@ RUN apk update && apk add --no-cache \
 RUN wget -q https://github.com/containers/bubblewrap/archive/refs/tags/v0.12.0.zip && mkdir /bubblewrap2 && unzip v0.12.0.zip -d /bubblewrap2
 WORKDIR /bubblewrap2/bubblewrap-0.12.0
 
+##RUN sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h
+
 # Configura o Meson injetando a flag para linkagem estática nativa
 RUN LDFLAGS="-static" meson setup build \
     --buildtype=release \
