@@ -3,12 +3,12 @@
 # ==========================================
 FROM alpine:edge AS builder
 
-# Configura os repositórios estáveis e de testes do Alpine Edge
+# Configura os repositórios oficiais e garante a atualização dos índices em uma única camada limpa
 RUN echo "https://alpinelinux.org" > /etc/apk/repositories && \
-    echo "https://alpinelinux.org" >> /etc/apk/repositories && \
+    echo "https://dl-cdn.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
     echo "http://alpinelinux.org" >> /etc/apk/repositories
 
-# Instalação explícita de dependências — build-base REMOVIDO
+# Atualiza os índices explicitamente antes de buscar as dependências (build-base REMOVIDO)
 RUN apk update && apk add --no-cache \
     git \
     gcc \
@@ -43,8 +43,7 @@ RUN meson compile -C build
 
 WORKDIR /bubblewrap/build
 
-# O comando strip necessita do pacote binutils (instalado indiretamente por outras dependências),
-# ele limpa os metadados desnecessários do binário final.
+# Remove metadados do binário final (O comando strip necessita de utilitários do sistema já inclusos)
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 
 
