@@ -23,7 +23,7 @@ RUN apk update && apk add --no-cache \
 
 # Clona a versão estável v0.12.0 do Bubblewrap (Sem espaços incorretos na URL)
 RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap.git /bubblewrap2
-WORKDIR /bubblewrap
+WORKDIR /bubblewrap2
 
 # Configura o Meson injetando a flag para linkagem estática nativa
 RUN LDFLAGS="-static" meson setup build \
@@ -33,7 +33,7 @@ RUN LDFLAGS="-static" meson setup build \
 # O próprio Meson compila tudo de forma limpa e automática para qualquer arquitetura
 RUN meson compile -C build
 
-WORKDIR /bubblewrap/build
+WORKDIR /bubblewrap2/build
 
 # Remove metadados do binário final para reduzir o tamanho
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
