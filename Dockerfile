@@ -15,15 +15,13 @@ RUN apk add --no-cache \
     libcap-dev \
     libcap-static
   
-RUN git clone --depth 1 --branch v0.12.0 https://github.com/containers/bubblewrap.git
+RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
 
 WORKDIR bubblewrap
 
-RUN sed -i '1i #include <limits.h>' bubblewrap.c
+RUN meson build
 
-RUN meson setup build -Dprefer_static=true
-
-RUN ninja -C build
+RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
 
 WORKDIR build
 
