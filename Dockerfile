@@ -22,7 +22,7 @@ RUN apk update && apk add --no-cache \
     pcre2-dev
 
 # Clona a versão estável v0.12.0 do Bubblewrap (Sem espaços incorretos na URL)
-RUN git clone --branch v0.12.0 https://github.com /bubblewrap2
+RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap.git /bubblewrap2
 WORKDIR /bubblewrap
 
 # Configura o Meson injetando a flag para linkagem estática nativa
