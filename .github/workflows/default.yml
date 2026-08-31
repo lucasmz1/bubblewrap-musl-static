@@ -22,9 +22,10 @@ jobs:
         echo 'build again'
         mkdir -p dist
 
-        for arch in x86_64 aarch64 armhf i386; do
-          docker build --platform "${arch}" -t alpine:bwrap .
-          docker run --rm --platform "${arch}" -v $(pwd):/workdir alpine:bwrap cp /bubblewrap/build/bwrap "/workdir/dist/bwrap-${arch}"
+        for platform in linux/amd64 linux/arm64 linux/arm/v7 linux/386; do
+          arch=$(echo "${platform}" | cut -d'/' -f2)
+          docker build --no-cache --platform "${platform}" -t alpine:bwrap .
+          docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap cp /usr/local/bin/bwrap "/workdir/dist/bwrap-${arch}"
         done
 
     - name: Set permissions for dist directory
