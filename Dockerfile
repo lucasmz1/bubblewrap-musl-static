@@ -29,7 +29,8 @@ WORKDIR /bubblewrap2
 # Configura o Meson injetando a flag para linkagem estática nativa
 RUN LDFLAGS="-static" meson setup build \
     --buildtype=release \
-    -Ddefault_library=static
+    -Ddefault_library=static \
+    -Dtests=false
 
 # O próprio Meson compila tudo de forma limpa e automática para qualquer arquitetura
 RUN meson compile -C build
