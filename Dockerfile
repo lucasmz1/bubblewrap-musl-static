@@ -19,6 +19,8 @@ RUN source /etc/profile
 RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap
 WORKDIR /bubblewrap
 
+RUN sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h
+
 RUN meson setup build
 RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
 
@@ -52,6 +54,8 @@ RUN apk update && apk add --no-cache \
 RUN source /etc/profile
 RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap
 WORKDIR /bubblewrap
+
+RUN sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h
 
 RUN meson build
 
