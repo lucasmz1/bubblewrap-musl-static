@@ -23,7 +23,7 @@ RUN sed -i '1i #include <limits.h>' bubblewrap.c
 
 RUN meson setup build -Dprefer_static=true
 
-RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
+RUN ninja -C build
 
 WORKDIR build
 
