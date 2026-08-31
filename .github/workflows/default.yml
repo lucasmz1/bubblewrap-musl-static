@@ -21,12 +21,12 @@ jobs:
       run: |
         echo 'build again'
         mkdir -p dist
-
-        for platform in linux/amd64 linux/arm64 linux/arm/v7 linux/386; do
-          arch=$(echo "${platform}" | cut -d'/' -f2)
-          docker build --no-cache --platform "${platform}" -t alpine:bwrap .
-          docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap cp /usr/local/bin/bwrap "/workdir/dist/bwrap-${arch}"
-        done
+          for platform in linux/amd64 linux/arm64 linux/arm/v7 linux/386; do
+            arch=$(echo "${platform}" | cut -d'/' -f2)
+            echo "Construindo para ${arch}..."
+            docker build --no-cache --platform "${platform}" -t alpine:bwrap .
+            docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap cp /usr/local/bin/bwrap "/workdir/dist/bwrap-${arch}"
+          done
 
     - name: Set permissions for dist directory
       run: |
