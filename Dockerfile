@@ -4,7 +4,8 @@
 FROM alpine:edge AS builder
 
 # Configura os repositórios oficiais e garante a atualização dos índices em uma única camada limpa
-RUN echo "https://alpinelinux.org" > /etc/apk/repositories && \
+RUN rm -f /etc/apk/repositories && \
+    echo "https://alpinelinux.org" > /etc/apk/repositories && \
     echo "https://dl-cdn.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
     echo "http://alpinelinux.org" >> /etc/apk/repositories
 
