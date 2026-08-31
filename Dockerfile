@@ -1,7 +1,7 @@
 # ==========================================
 # ETAPA 1: Compilação (Ambiente de Build Estável)
 # ==========================================
-FROM alpine:3.24 AS builder
+FROM alpine:3.24 AS builder2
 
 # Instala as dependências de compilação diretamente da versão estável v3.24
 RUN apk update && apk add --no-cache \
@@ -19,10 +19,11 @@ RUN apk update && apk add --no-cache \
     libselinux-static \
     libselinux-dev \
     pcre2-static \
-    pcre2-dev
+    pcre2-dev \
+    build-base
 
 # Clona a versão estável v0.12.0 do Bubblewrap (Sem espaços incorretos na URL)
-RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap.git /bubblewrap2
+RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap /bubblewrap2
 WORKDIR /bubblewrap2
 
 # Configura o Meson injetando a flag para linkagem estática nativa
@@ -45,7 +46,7 @@ RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 FROM alpine:3.24
 
 # Transfere apenas o binário executável estático gerado na etapa anterior
-COPY --from=builder /bubblewrap/build/bwrap /usr/local/bin/bwrap
+COPY --from=builder /bubblewrap2/build/bwrap /usr/local/bin/bwrap
 
 # Define o ponto de entrada do container
 ENTRYPOINT ["/usr/local/bin/bwrap"]
