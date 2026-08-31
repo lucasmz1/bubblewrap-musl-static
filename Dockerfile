@@ -46,7 +46,7 @@ RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 FROM alpine:3.24
 
 # Transfere apenas o binário executável estático gerado na etapa anterior
-COPY --from=builder /bubblewrap2/build/bwrap /usr/local/bin/bwrap
+COPY --from=builder2 /bubblewrap2/build/bwrap /usr/local/bin/bwrap
 
 # Define o ponto de entrada do container
 ENTRYPOINT ["/usr/local/bin/bwrap"]
