@@ -1,63 +1,28 @@
-# ==========================================
-# ETAPA 1: Compilação (Ambiente de Build Estável)
-# ==========================================
-FROM alpine:3.24 AS builder2
+FROM alpine:latest
 
-# Instala as dependências de compilação diretamente da versão estável v3.24
-RUN apk update && apk add --no-cache \
-    wget \
-    unzip \
-    gcc \
-    make \
-    musl-dev \
-    ninja \
-    linux-headers \
-    bash \
-    meson \
-    pkgconfig \
-    libcap-static \
-    libcap-dev \
-    libselinux-static \
-    libselinux-dev \
-    pcre2-static \
-    pcre2-dev
+# Update repositories
+RUN echo https://dl-cdn.alpinelinux.org/alpine/v3.20/main/ > /etc/apk/repositories
+RUN echo https://dl-cdn.alpinelinux.org/alpine/v3.20/community/ >> /etc/apk/repositories
 
-# Baixa e extrai o código fonte da tag v0.12.0 de forma limpa
-RUN wget -q https://github.com/containers/bubblewrap/archive/refs/tags/v0.12.0.zip && \
-    mkdir /bubblewrap2 && \
-    unzip v0.12.0.zip -d /bubblewrap2 && \
-    rm v0.12.0.zip
+RUN apk update
+RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
+  linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
+  libselinux-dev libxslt upx
 
-WORKDIR /bubblewrap2/bubblewrap-0.12.0
+RUN git clone https://github.com/containers/bubblewrap
 
-# Injeta os arquivos de cabeçalho necessários para a musl libc do Alpine v3.24
-RUN cd /bubblewrap2/bubblewrap-0.12.0 && sed -i '1i #include <linux/types.h>\n#include <limits.h>' utils.h && cd /
+WORKDIR bubblewrap
 
-# CORREÇÃO DEFINITIVA: Desativamos a detecção automática do SELinux pelo Meson 
-# e injetamos os parâmetros estáticos e bibliotecas (.a) manualmente para evitar o link dinâmico (.so).
-RUN meson setup build \
-    --buildtype=release \
-    -Ddefault_library=static \
-    -Dtests=false \
-    -Dselinux=disabled \
-    -Dc_link_args="-static -lcap"
+RUN meson build
 
-# Compila o projeto de forma nativa e automatizada
-RUN meson compile -C build
+RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
 
-WORKDIR /bubblewrap2/bubblewrap-0.12.0/build
+WORKDIR build
 
-# Remove metadados do binário final para reduzir o tamanho
+RUN cc -o bwrap bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o -static -L/usr/lib -lcap -lselinux
+
+# Strip
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 
-
-# ==========================================
-# ETAPA 2: Imagem Final Otimizada e Segura
-# ==========================================
-FROM alpine:3.24
-
-# Transfere apenas o binário executável estático gerado na etapa anterior
-COPY --from=builder2 /bubblewrap2/bubblewrap-0.12.0/build/bwrap /usr/local/bin/bwrap
-
-# Define o ponto de entrada do container
-ENTRYPOINT ["/usr/local/bin/bwrap"]
+# Compress
+# RUN upx --ultra-brute --no-lzma bwrap
