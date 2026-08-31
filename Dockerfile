@@ -24,7 +24,7 @@ RUN apk update && apk add --no-cache \
     libselinux-static \
     libselinux-dev \
     pcre2-static \
-    pcre2-dev
+    pcre2-dev build-base
 
 # Clona o código-fonte do Bubblewrap
 RUN git clone https://github.com /bubblewrap
