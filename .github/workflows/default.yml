@@ -25,7 +25,7 @@ jobs:
             arch=$(echo "${platform}" | cut -d'/' -f2)
             echo "Construindo para ${arch}..."
             docker build --no-cache --platform "${platform}" -t alpine:bwrap .
-            docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap find -iname 'bwrap' -type f | xargs -i -t -exec cp {} "/workdir/dist/bwrap-${arch}"
+            docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap sh -c 'mkdir -p /workdir/dist && find . -iname "bwrap" -type f -exec cp {} "/workdir/dist/bwrap-${arch}" \;'
           done
 
     - name: Set permissions for dist directory
