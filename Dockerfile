@@ -19,6 +19,8 @@ RUN git clone --depth 1 --branch v0.12.0 https://github.com/containers/bubblewra
 
 WORKDIR bubblewrap
 
+RUN sed -i '1i #include <limits.h>' bubblewrap.c
+
 RUN meson build
 
 RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
