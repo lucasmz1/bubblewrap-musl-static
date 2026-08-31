@@ -8,6 +8,12 @@ RUN apk update
 RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
   linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
   libselinux-dev libxslt upx
+
+RUN apk add --no-cache \
+    libselinux-dev \
+    libselinux-static \
+    libcap-dev \
+    libcap-static
   
 RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
 
