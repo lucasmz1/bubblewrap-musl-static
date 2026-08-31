@@ -16,7 +16,7 @@ RUN apk update && apk add --no-cache \
     libxslt upx bash bash-completion \
     build-base
 
-RUN git clone https://github.com/containers/bubblewrap
+RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap
 WORKDIR /bubblewrap
 
 RUN meson setup build
@@ -50,7 +50,7 @@ RUN apk update && apk add --no-cache \
     pcre2-static pcre2-dev \
     libxslt upx
 
-RUN git clone https://github.com/containers/bubblewrap
+RUN git clone --branch v0.12.0 https://github.com/containers/bubblewrap
 WORKDIR bubblewrap
 
 RUN meson build
