@@ -22,10 +22,18 @@ jobs:
         echo 'build again'
         mkdir -p dist
           for platform in linux/amd64 linux/arm64 linux/arm/v7 linux/386; do
-            arch=$(echo "${platform}" | cut -d'/' -f2)
+            # Normaliza a arquitetura para nomes limpos (ex: armv7 em vez de arm)
+            case "${platform}" in
+              linux/arm/v7) arch="armv7" ;;
+              linux/386) arch="i386" ;;
+              *) arch=$(echo "${platform}" | cut -d'/' -f2) ;;
+            esac
+
             echo "Construindo para ${arch}..."
             docker build --no-cache --platform "${platform}" -t alpine:bwrap .
-            docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap sh -c 'mkdir -p /workdir/dist && find . -iname "bwrap" -type f -exec cp {} "/workdir/dist/bwrap-${arch}" \;'
+            
+            # Usando aspas duplas para permitir a expansão de ${arch} do host para dentro do container
+            docker run --rm --platform "${platform}" -v "$(pwd):/workdir" alpine:bwrap sh -c "mkdir -p /workdir/dist && find . -iname 'bwrap' -type f -exec cp {} \"/workdir/dist/bwrap-${arch}\" \;"
           done
 
     - name: Set permissions for dist directory
