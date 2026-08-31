@@ -1,7 +1,7 @@
 # ==========================================
 # ETAPA 1: Compilação (Ambiente de Build Estável)
 # ==========================================
-FROM alpine:3.24.1 AS builder
+FROM alpine:3.24 AS builder
 
 # Instala as dependências de compilação diretamente dos repositórios estáveis da v3.20
 RUN apk update && apk add --no-cache \
