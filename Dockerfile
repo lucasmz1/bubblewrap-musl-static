@@ -9,7 +9,7 @@ RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
   linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
   libselinux-dev libxslt upx
 
-RUN git clone https://github.com/containers/bubblewrap
+RUN git clone -b 0.11.2 https://github.com/containers/bubblewrap
 
 WORKDIR bubblewrap
 
