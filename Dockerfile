@@ -7,7 +7,7 @@ RUN echo https://dl-cdn.alpinelinux.org/alpine/v3.24/community/ >> /etc/apk/repo
 RUN apk update
 RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
   linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
-  libselinux-dev libxslt upx build-base bash bash-completion-dev libxslt docbook-xsl bash tar zstd
+  libselinux-dev libxslt upx build-base musl-dev libcap-static libcap-dev libselinux-static libselinux-dev bash-completion-dev libxslt docbook-xsl bash tar zstd
 
 RUN apk add --no-cache \
     libselinux-dev \
@@ -22,16 +22,16 @@ WORKDIR bubblewrap
 
 #RUN meson build
 
-RUN meson setup -Dbuildtype=release -Dstrip=true -Dprefer_static=true -Dc_link_args=-static-pie build
-RUN meson compile -C build
+RUN meson setup -Dbuildtype=release -Dstrip=true -Dprefer_static=true -Dc_link_args=-static-pie _builddir
+meson compile -C _builddir
 #RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
 
-WORKDIR build
+WORKDIR _builddir
 
 #RUN cc -o bwrap bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o -static -L/usr/lib -lcap -lselinux
 
 # Strip
-RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
+#RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
 
 # Compress
 # RUN upx --ultra-brute --no-lzma bwrap
