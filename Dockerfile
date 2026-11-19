@@ -14,6 +14,13 @@ RUN apk add --no-cache \
     libselinux-static \
     libcap-dev \
     libcap-static
+
+RUN apk add --no-cache \
+    libselinux-dev \
+    libselinux-static \
+    libcap-dev \
+    libcap-static \
+    pcre2-static
   
 #RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
 RUN git clone --depth 1 --branch v0.13.1 https://github.com/containers/bubblewrap.git
