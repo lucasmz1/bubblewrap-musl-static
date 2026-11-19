@@ -7,7 +7,7 @@ RUN echo https://dl-cdn.alpinelinux.org/alpine/v3.24/community/ >> /etc/apk/repo
 RUN apk update
 RUN apk add --no-cache git gcc make musl-dev autoconf automake libtool ninja \
   linux-headers bash meson cmake pkgconfig libcap-static libcap-dev \
-  libselinux-dev libxslt upx build-base
+  libselinux-dev libxslt upx build-base bash bash-completion-dev libxslt docbook-xsl bash tar zstd
 
 RUN apk add --no-cache \
     libselinux-dev \
@@ -15,17 +15,20 @@ RUN apk add --no-cache \
     libcap-dev \
     libcap-static
   
-RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
+#RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
+RUN git clone --depth 1 --branch v0.13.1 https://github.com/containers/bubblewrap.git
 
 WORKDIR bubblewrap
 
-RUN meson build
+#RUN meson build
 
-RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
+RUN meson setup -Dbuildtype=release -Dstrip=true -Dprefer_static=true -Dc_link_args=-static-pie build
+RUN meson compile -C build
+#RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
 
 WORKDIR build
 
-RUN cc -o bwrap bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o -static -L/usr/lib -lcap -lselinux
+#RUN cc -o bwrap bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o -static -L/usr/lib -lcap -lselinux
 
 # Strip
 RUN strip -s -R .comment -R .gnu.version --strip-unneeded bwrap
