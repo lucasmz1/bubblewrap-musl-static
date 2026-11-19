@@ -15,7 +15,8 @@ RUN apk add --no-cache \
     libcap-dev \
     libcap-static
   
-RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
+#RUN git clone --depth 1 --branch v0.11.2 https://github.com/containers/bubblewrap.git
+RUN git clone --depth 1 --branch v0.13.1 https://github.com/containers/bubblewrap.git
 
 WORKDIR bubblewrap
 
