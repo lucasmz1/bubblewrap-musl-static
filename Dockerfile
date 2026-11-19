@@ -23,7 +23,7 @@ WORKDIR bubblewrap
 #RUN meson build
 
 RUN meson setup -Dbuildtype=release -Dstrip=true -Dprefer_static=true -Dc_link_args=-static-pie _builddir
-meson compile -C _builddir
+RUN meson compile -C _builddir
 #RUN ninja -C build bwrap.p/bubblewrap.c.o bwrap.p/bind-mount.c.o bwrap.p/network.c.o bwrap.p/utils.c.o
 
 WORKDIR _builddir
